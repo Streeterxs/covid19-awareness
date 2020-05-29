@@ -1,0 +1,9 @@
+schema {
+  query: QueryType
+}
+
+"""Graphql type for queries"""
+type QueryType {
+  helloWorld: String
+}
+

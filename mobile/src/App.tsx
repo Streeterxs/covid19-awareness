@@ -8,7 +8,7 @@
  * @format
  */
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -26,9 +26,25 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import { RelayEnvironmentProvider, useLazyLoadQuery } from 'react-relay/hooks';
+import { graphql } from 'react-relay';
+
+import environment from './Relay/environment';
+
 declare const global: {HermesInternal: null | {}};
 
+const helloWorldQuery = graphql`
+  query AppHelloWorldQuery {
+    helloWorld 
+  }
+`;
+
 const App = () => {
+  const {helloWorld}: any = useLazyLoadQuery(helloWorldQuery, {}, {
+    fetchPolicy: 'store-or-network'
+  });
+
+  console.log(helloWorld);
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -39,17 +55,32 @@ const App = () => {
           <Header />
           {global.HermesInternal == null ? null : (
             <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
+              <Text>Testando testes s</Text>
             </View>
           )}
           <View style={styles.body}>
-              <Text style={styles.sectionTitle}>Olá Mundo</Text>
+              <Text style={styles.sectionTitle}>{helloWorld}</Text>
           </View>
         </ScrollView>
       </SafeAreaView>
     </>
   );
 };
+
+const AppRoot = () => {
+  const fallback = (
+    <Text>
+      Loading...
+    </Text>
+  )
+  return (
+    <RelayEnvironmentProvider environment={environment}>
+      <Suspense fallback={fallback}>
+        <App/>
+      </Suspense>
+    </RelayEnvironmentProvider>
+  )
+}
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -90,4 +121,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default AppRoot;
