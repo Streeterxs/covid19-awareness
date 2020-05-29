@@ -12,10 +12,14 @@
     "relay": "yarn run relay-compiler --schema ./schema/schema.graphql --src ./src/ --watchman false $@ --language typescript"
   },
   "dependencies": {
+    "@react-native-community/geolocation": "^2.0.2",
     "@types/react-native-dotenv": "^0.2.0",
     "react": "16.11.0",
     "react-native": "0.62.2",
+    "react-native-dialogs": "^1.1.0",
     "react-native-dotenv": "^0.2.0",
+    "react-native-geolocation-service": "^4.0.2",
+    "react-native-maps": "0.27.1",
     "react-relay": "^0.0.0-experimental-895a6fe0",
     "relay-compiler-language-typescript": "^12.0.3",
     "relay-runtime": "^9.1.0"

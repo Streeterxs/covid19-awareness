@@ -8,7 +8,7 @@
  * @format
  */
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -16,6 +16,10 @@ import {
   View,
   Text,
   StatusBar,
+  PermissionsAndroid,
+  Platform,
+  ToastAndroid,
+  Button,
 } from 'react-native';
 
 import {
@@ -25,6 +29,9 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import Geolocation from 'react-native-geolocation-service';
+// @ts-ignore
+import DialogAndroid from 'react-native-dialogs';
 
 import { RelayEnvironmentProvider, useLazyLoadQuery } from 'react-relay/hooks';
 import { graphql } from 'react-relay';
@@ -44,10 +51,81 @@ const App = () => {
     fetchPolicy: 'store-or-network'
   });
 
-  console.log(helloWorld);
+  const hasLocationPermission = async () => {
+    const hasPermission = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+
+    if (hasPermission) {
+      return true;
+    }
+
+    const status = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+
+    if (status === PermissionsAndroid.RESULTS.GRANTED) {
+      return true;
+    }
+
+    if (status === PermissionsAndroid.RESULTS.DENIED) {
+      ToastAndroid.show(
+        'Location permission denied by user.',
+        ToastAndroid.LONG,
+      );
+    } else if (status === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+      ToastAndroid.show(
+        'Location permission revoked by user.',
+        ToastAndroid.LONG,
+      );
+    }
+
+    return false;
+  };
+
+  const showDialogAndroid = async () => {
+    const { action } = await DialogAndroid.alert('Title', 'Message');
+    switch (action) {
+      case DialogAndroid.actionPositive:
+          console.log('positive!')
+          break;
+      case DialogAndroid.actionNegative:
+          console.log('negative!')
+          break;
+      case DialogAndroid.actionNeutral:
+          console.log('neutral!')
+          break;
+      case DialogAndroid.actionDismiss:
+          console.log('dismissed!')
+          break;
+    }
+  }
+
+  const getLocation = async () => {
+    const hasLocationPermissionConst = await hasLocationPermission();
+
+    if (!hasLocationPermissionConst) {
+      return;
+    }
+    Geolocation.getCurrentPosition(
+      (position) => {
+        console.log(position);
+      },
+      (error) => {
+        console.log(error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 10000,
+        distanceFilter: 0,
+      },
+    );
+  };
+
+
   return (
     <>
-      <StatusBar barStyle="dark-content" />
       <SafeAreaView>
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
@@ -60,6 +138,14 @@ const App = () => {
           )}
           <View style={styles.body}>
               <Text style={styles.sectionTitle}>{helloWorld}</Text>
+              <Button
+                title="Get Location"
+                onPress={getLocation}
+              />
+              <Button
+                title="Show Dialog"
+                onPress={showDialogAndroid}
+              />
           </View>
         </ScrollView>
       </SafeAreaView>
