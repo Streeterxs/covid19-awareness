@@ -22,4 +22,6 @@ const PositionType = new GraphQLObjectType({
             resolve: (position: IPositionModel) => position.updatedAt
         }
     }
-})
+});
+
+export default PositionType
