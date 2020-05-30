@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLString } from "graphql";
 import { IPositionModel } from "./PositionModel";
 
-const positionType = new GraphQLObjectType({
+const PositionType = new GraphQLObjectType({
     name: 'PositionType',
     description: 'Position',
     fields: {
