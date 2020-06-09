@@ -32,6 +32,8 @@ import {
 import Geolocation from 'react-native-geolocation-service';
 // @ts-ignore
 import DialogAndroid from 'react-native-dialogs';
+// @ts-ignore
+import MapView from 'react-native-maps-osmdroid';
 
 import { RelayEnvironmentProvider, useLazyLoadQuery } from 'react-relay/hooks';
 import { graphql } from 'react-relay';
@@ -47,6 +49,10 @@ const helloWorldQuery = graphql`
 `;
 
 const App = () => {
+  const z = 1;
+  const x = 2;
+  const y = 3;
+  const [watchId, setWatchId] = useState();
   const {helloWorld}: any = useLazyLoadQuery(helloWorldQuery, {}, {
     fetchPolicy: 'store-or-network'
   });
@@ -101,13 +107,19 @@ const App = () => {
     }
   }
 
-  const getLocation = async () => {
+  const watchLocation = async () => {
     const hasLocationPermissionConst = await hasLocationPermission();
 
     if (!hasLocationPermissionConst) {
       return;
     }
-    Geolocation.getCurrentPosition(
+    const id = Geolocation.watchPosition((position) => {
+      console.log(position);
+    }, 
+    err => console.log);
+    console.log(id);
+    setWatchId(id);
+    /* Geolocation.getCurrentPosition(
       (position) => {
         console.log(position);
       },
@@ -120,8 +132,19 @@ const App = () => {
         maximumAge: 10000,
         distanceFilter: 0,
       },
-    );
+    ); */
   };
+
+  const stopWatchLocation = async (watchId: number) => {
+    const hasLocationPermissionConst = await hasLocationPermission();
+
+    if (!hasLocationPermissionConst) {
+      return;
+    }
+
+    console.log(watchId);
+    Geolocation.clearWatch(watchId);
+  }
 
 
   return (
@@ -139,8 +162,15 @@ const App = () => {
           <View style={styles.body}>
               <Text style={styles.sectionTitle}>{helloWorld}</Text>
               <Button
-                title="Get Location"
-                onPress={getLocation}
+                title="Watch Location"
+                onPress={watchLocation}
+              />
+              <Button
+                onPress={() => {if (watchId >= 0) {
+                  stopWatchLocation(watchId);
+                }
+              }}
+                title="Clear Watch Location"
               />
               <Button
                 title="Show Dialog"
@@ -148,6 +178,16 @@ const App = () => {
               />
           </View>
         </ScrollView>
+        <View>
+          <MapView
+            initialRegion={{
+              latitude: 37.78825,
+              longitude: -122.4324,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          />
+        </View>
       </SafeAreaView>
     </>
   );

@@ -1,5 +1,31 @@
 schema {
   query: QueryType
+  mutation: MutationType
+}
+
+"""Mutation types"""
+type MutationType {
+  """New position mutation"""
+  NewPosition(input: NewPositionInput!): NewPositionPayload
+}
+
+input NewPositionInput {
+  lat: String
+  lon: String
+  clientMutationId: String
+}
+
+type NewPositionPayload {
+  createdPosition: PositionType
+  clientMutationId: String
+}
+
+"""Position"""
+type PositionType {
+  lat: String
+  lon: String
+  createdAt: String
+  updatedAt: String
 }
 
 """Graphql type for queries"""

@@ -1,8 +1,8 @@
 // @ts-ignore
-import {REACT_APP_GRAPHQL_ADBREVERSE3} from 'react-native-dotenv';
+import {REACT_APP_GRAPHQL_ADBREVERSE5} from 'react-native-dotenv';
 
 const config = {
-    GRAPHQL_URL: REACT_APP_GRAPHQL_ADBREVERSE3
+    GRAPHQL_URL: REACT_APP_GRAPHQL_ADBREVERSE5
 };
 
 export default config;
