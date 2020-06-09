@@ -7,4 +7,6 @@ const MutationType = new GraphQLObjectType({
     fields: {
         ...PositionMutations
     }
-})
+});
+
+export default MutationType;
