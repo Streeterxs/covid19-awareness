@@ -76,7 +76,7 @@ const App = () => {
           </View>
         </ScrollView>
         <View>
-          <Map/>
+          {/* <Map/> */}
         </View>
       </SafeAreaView>
     </>

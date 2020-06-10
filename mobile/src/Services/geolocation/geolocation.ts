@@ -1,8 +1,17 @@
 import Geolocation from 'react-native-geolocation-service';
 import { locationPermissionModule } from '../permissions';
 
+type WatchObject = {
+    isWatching: boolean,
+    value: number | null
+};
+
 const geolocationModule = () => {
-    let watchId: number | null;
+    let watchObject: WatchObject = {
+        isWatching: false,
+        value: null
+    };
+
     let locatPermissionModule = locationPermissionModule();
 
     const hasGeolocationPermition = () => {
@@ -23,30 +32,32 @@ const geolocationModule = () => {
 
     const locatPermissionChecker = hasGeolocationPermition();
 
-
-
     const watchLocation = async () => {
-
-        if (await locatPermissionChecker()) {
+        if (!(await locatPermissionChecker())) {
             return;
         }
 
-        watchId = Geolocation.watchPosition((position) => {
-            console.log(position);
-        }, 
-        err => console.log);
+        if (!watchObject.isWatching) {
+            watchObject.isWatching = true;
+
+            watchObject.value = Geolocation.watchPosition((position) => {
+                console.log(position);
+            }, 
+            err => console.log);
+        }
 
     };
 
     const stopWatchLocation = async () => {
-
-        if (await locatPermissionChecker()) {
+        if (!(await locatPermissionChecker())) {
             return;
         }
 
-        if (typeof watchId === 'number') Geolocation.clearWatch(watchId);
-        
-        watchId = null;
+        if (watchObject.isWatching && typeof watchObject.value === 'number') {
+            Geolocation.clearWatch(watchObject.value);
+            watchObject.value = null;
+            watchObject.isWatching = false;
+        }
     }
 
     return {
