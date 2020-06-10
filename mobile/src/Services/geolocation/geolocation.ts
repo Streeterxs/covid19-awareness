@@ -32,17 +32,19 @@ const geolocationModule = () => {
 
     const locatPermissionChecker = hasGeolocationPermition();
 
-    const watchLocation = async () => {
+    const watchLocation = async (
+        positionChange?: (position: Geolocation.GeoPosition) => void,
+        notPermited?: (message: string) => void
+    ) => {
         if (!(await locatPermissionChecker())) {
+            if (notPermited) notPermited('Permission has not been granted');
             return;
         }
 
         if (!watchObject.isWatching) {
             watchObject.isWatching = true;
 
-            watchObject.value = Geolocation.watchPosition((position) => {
-                console.log(position);
-            }, 
+            watchObject.value = Geolocation.watchPosition(positionChange ? positionChange : () => {}, 
             err => console.log);
         }
 

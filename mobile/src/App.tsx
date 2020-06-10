@@ -8,7 +8,7 @@
  * @format
  */
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -46,6 +46,18 @@ const App = () => {
   });
 
   const {watchLocation, stopWatchLocation} = geolocationModule();
+
+  useEffect(() => {
+    console.log('useEffect');
+    watchLocation((position) => {
+      console.log('teste com Ísis: ', position);
+    });
+
+    return () => {
+      console.log('component unmounted');
+      stopWatchLocation();
+    }
+  })
 
   return (
     <>
