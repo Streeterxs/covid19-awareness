@@ -12,8 +12,6 @@
     "relay": "yarn run relay-compiler --schema ./schema/schema.graphql --src ./src/ --watchman false $@ --language typescript"
   },
   "dependencies": {
-    "@react-native-community/geolocation": "^2.0.2",
-    "@types/react-native-dotenv": "^0.2.0",
     "react": "16.11.0",
     "react-native": "0.62.2",
     "react-native-dialogs": "^1.1.0",
@@ -37,6 +35,8 @@
     "@types/relay-runtime": "^8.0.8",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
+    "@react-native-community/geolocation": "^2.0.2",
+    "@types/react-native-dotenv": "^0.2.0",
     "babel-jest": "^24.9.0",
     "babel-plugin-relay": "^9.1.0",
     "eslint": "^6.5.1",
