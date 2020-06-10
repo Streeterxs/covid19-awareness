@@ -4,7 +4,6 @@ import DialogAndroid from 'react-native-dialogs';
 const dialogModule = () => {
     
     const showDialogAndroid = async () => {
-        console.log('entrou show dialog android');
         const { action } = await DialogAndroid.alert('Title', 'Message');
         switch (action) {
           case DialogAndroid.actionPositive:

@@ -8,26 +8,19 @@
  * @format
  */
 
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
   View,
   Text,
-  StatusBar,
-  PermissionsAndroid,
-  Platform,
-  ToastAndroid,
-  Button,
+  Button
 } from 'react-native';
 
 import {
   Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
+  Colors
 } from 'react-native/Libraries/NewAppScreen';
 
 import { RelayEnvironmentProvider, useLazyLoadQuery } from 'react-relay/hooks';
@@ -53,12 +46,6 @@ const App = () => {
   });
 
   const {watchLocation, stopWatchLocation} = geolocationModule();
-
-  useEffect(() => {
-    console.log('entrou useEffect');
-  }, []);
-
-
 
   return (
     <>

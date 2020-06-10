@@ -26,28 +26,24 @@ const geolocationModule = () => {
 
 
     const watchLocation = async () => {
-        const hasGeolocationPermition = await locatPermissionModule.hasLocationPermission();
-
-        console.log('entrou watchLocation');
 
         if (await locatPermissionChecker()) {
             return;
         }
+
         watchId = Geolocation.watchPosition((position) => {
             console.log(position);
         }, 
         err => console.log);
-        console.log(watchId);
+
     };
 
     const stopWatchLocation = async () => {
 
-        console.log('entrou stopWatchLocation');
         if (await locatPermissionChecker()) {
             return;
         }
-        
-        console.log('typeof watchId: ', typeof watchId);
+
         if (typeof watchId === 'number') Geolocation.clearWatch(watchId);
         
         watchId = null;
