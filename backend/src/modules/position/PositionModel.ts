@@ -1,13 +1,22 @@
 import mongoose, { Schema } from "mongoose";
 
-export interface IPositionModel extends mongoose.Document {
+export interface IPosition extends mongoose.Document {
+    device: string;
     lat: string;
     lon: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
-const positionModel = new Schema ({
+export interface IPositionModel extends mongoose.Model<IPosition> {
+    findByDevice: (deviceId: string) => IPosition | void
+}
+
+const positionSchema = new Schema ({
+    device: {
+        type: String,
+        required: true
+    },
     lat: {
         type: String,
         required: true
@@ -20,6 +29,15 @@ const positionModel = new Schema ({
     timestamps: true
 });
 
-const Position = mongoose.model<IPositionModel>('Position', positionModel);
+positionSchema.statics.findByDevice = async (deviceId: string) => {
+    try {
+        const positionFinded = await Position.findOne({device: deviceId});
+        return positionFinded;
+    } catch(err) {
+        console.log(err);
+    }
+}
+
+const Position = mongoose.model<IPosition, IPositionModel>('Position', positionSchema);
 
 export default Position;
