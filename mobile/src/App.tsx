@@ -8,7 +8,7 @@
  * @format
  */
 
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -29,6 +29,7 @@ import { graphql } from 'react-relay';
 import environment from './Relay/environment';
 import {geolocationModule, dialogModule} from './Services';
 import { Map } from './Components';
+import { getUniqueId, getManufacturer } from 'react-native-device-info';
 
 declare const global: {HermesInternal: null | {}};
 
@@ -38,7 +39,17 @@ const helloWorldQuery = graphql`
   }
 `;
 
+export type Position = {
+  device: string,
+  lat: number,
+  lon: number;
+};
 const App = () => {
+  const [position, setPosition] = useState<Position>({
+    device: getUniqueId(),
+    lat: -14.2350044,
+    lon: -51.9252815
+  });
   const {showDialogAndroid} = dialogModule();
 
   const {helloWorld}: any = useLazyLoadQuery(helloWorldQuery, {}, {
@@ -48,48 +59,45 @@ const App = () => {
   const {watchLocation, stopWatchLocation} = geolocationModule();
 
   useEffect(() => {
-    console.log('useEffect');
-    watchLocation((position) => {
-      console.log('teste com Ísis: ', position);
+    showDialogAndroid(() => {
+
+      watchLocation((watchPosition) => {
+
+        setPosition({
+          ...position,
+          lat: watchPosition.coords.latitude,
+          lon: watchPosition.coords.longitude
+        });
+
+      });
+  
+      setTimeout(() => {
+        setPosition({...position, lat: -14.2350044, lon: -51.9252815});
+      }, 10000);
+  
     });
 
+
     return () => {
-      console.log('component unmounted');
       stopWatchLocation();
     }
-  })
+  }, [])
 
   return (
     <>
       <SafeAreaView>
         <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}>
-          <Header />
           {global.HermesInternal == null ? null : (
             <View style={styles.engine}>
               <Text>Testando testes s</Text>
             </View>
           )}
           <View style={styles.body}>
-              <Text style={styles.sectionTitle}>{helloWorld}</Text>
-              <Button
-                title="Watch Location"
-                onPress={watchLocation ? watchLocation : console.log}
-              />
-              <Button
-                onPress={stopWatchLocation ? stopWatchLocation : console.log}
-                title="Clear Watch Location"
-              />
-              <Button
-                title="Show Dialog"
-                onPress={showDialogAndroid ? showDialogAndroid : console.log}
-              />
+            <Text>Testando testando</Text>
+            <Map position={position}/>
           </View>
         </ScrollView>
-        <View>
-          {/* <Map/> */}
-        </View>
       </SafeAreaView>
     </>
   );
@@ -120,6 +128,8 @@ const styles = StyleSheet.create({
   },
   body: {
     backgroundColor: Colors.white,
+    justifyContent: 'flex-end',
+    alignItems: 'center'
   },
   sectionContainer: {
     marginTop: 32,
@@ -138,14 +148,6 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
   },
 });
 
