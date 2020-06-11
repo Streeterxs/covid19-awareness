@@ -10,8 +10,9 @@ type MutationType {
 }
 
 input NewPositionInput {
-  lat: String
-  lon: String
+  device: String
+  lat: Float
+  lon: Float
   clientMutationId: String
 }
 
@@ -22,8 +23,8 @@ type NewPositionPayload {
 
 """Position"""
 type PositionType {
-  lat: String
-  lon: String
+  lat: Float
+  lon: Float
   createdAt: String
   updatedAt: String
 }

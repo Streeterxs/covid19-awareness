@@ -23,7 +23,7 @@ import {
   Colors
 } from 'react-native/Libraries/NewAppScreen';
 
-import { RelayEnvironmentProvider, useLazyLoadQuery } from 'react-relay/hooks';
+import { RelayEnvironmentProvider, useLazyLoadQuery, useMutation } from 'react-relay/hooks';
 import { graphql } from 'react-relay';
 
 import environment from './Relay/environment';
@@ -39,12 +39,27 @@ const helloWorldQuery = graphql`
   }
 `;
 
+const newPositionMutation = graphql`
+  mutation AppNewPositionMutation($device: String!, $lat: Float!, $lon: Float!) {
+    NewPosition(input: {device: $device, lat: $lat, lon: $lon, clientMutationId: "1"}) {
+      createdPosition {
+        lat
+        lon
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+
 export type Position = {
-  device: string,
-  lat: number,
+  device: string;
+  lat: number;
   lon: number;
 };
 const App = () => {
+  // New Position Mutation
+  const [newPositionCommit, newPositionIsInFlight] = useMutation(newPositionMutation);
   const [position, setPosition] = useState<Position>({
     device: getUniqueId(),
     lat: -14.2350044,
@@ -67,6 +82,13 @@ const App = () => {
           ...position,
           lat: watchPosition.coords.latitude,
           lon: watchPosition.coords.longitude
+        });
+
+        newPositionCommit({
+          variables: {...position},
+          onCompleted: () => {
+            
+          }
         });
 
       });
