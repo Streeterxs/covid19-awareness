@@ -1,19 +1,27 @@
 import { mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLString } from "graphql";
+import { GraphQLString, GraphQLFloat } from "graphql";
 
 import PositionType from "../PositionType";
 import positionLoader from "../PositionLoader";
 import Position from "../PositionModel";
 
+type MutationInputs = {
+    device: string,
+    lat: number,
+    lon: number
+}
 const NewPosition = mutationWithClientMutationId({
     name: 'NewPosition',
     description: 'New position mutation',
     inputFields: {
-        lat: {
+        device: {
             type: GraphQLString
         },
+        lat: {
+            type: GraphQLFloat
+        },
         lon: {
-            type: GraphQLString
+            type: GraphQLFloat
         }
     },
     outputFields: {
@@ -22,10 +30,16 @@ const NewPosition = mutationWithClientMutationId({
             resolve: async (position) => await positionLoader(position.id)
         }
     },
-    mutateAndGetPayload: async ({lat, lon}) => {
+    mutateAndGetPayload: async ({device, lat, lon}: MutationInputs) => {
         try {
-            const positionCreated = await new Position({lat, lon});
-            console.log(positionCreated);
+            const findedPosition = await Position.findByDevice(device);
+            if (findedPosition) {
+                findedPosition.lat = lat;
+                findedPosition.lon = lon;
+                await findedPosition.save();
+                return findedPosition;
+            }
+            const positionCreated = await new Position({lat, lon, device});
             await positionCreated.save();
             return positionCreated;
         } catch (err) {

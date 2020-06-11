@@ -2,8 +2,8 @@ import mongoose, { Schema } from "mongoose";
 
 export interface IPosition extends mongoose.Document {
     device: string;
-    lat: string;
-    lon: string;
+    lat: number;
+    lon: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -18,11 +18,11 @@ const positionSchema = new Schema ({
         required: true
     },
     lat: {
-        type: String,
+        type: Number,
         required: true
     },
     lon: {
-        type: String,
+        type: Number,
         required: true
     }
 }, {
@@ -35,6 +35,7 @@ positionSchema.statics.findByDevice = async (deviceId: string) => {
         return positionFinded;
     } catch(err) {
         console.log(err);
+        return null
     }
 }
 
