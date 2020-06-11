@@ -95,7 +95,7 @@ const App = () => {
   
       setTimeout(() => {
         setPosition({...position, lat: -14.2350044, lon: -51.9252815});
-      }, 10000);
+      }, 5000);
   
     });
 

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    View, Dimensions, StyleSheet
+    View, Dimensions, StyleSheet,Text, Button
 } from 'react-native';
 
 import MapView, {Marker} from 'react-native-maps-osmdroid';
@@ -19,36 +19,74 @@ type MapProps = {
   position: Position
 };
 
-const Map = ({position}: MapProps) => {
-  console.log(position);
+type RegionType = {
+  latitude: number,
+  longitude: number,
+  latitudeDelta: number,
+  longitudeDelta: number
+}
 
-    return (
-      <View style={styles.container}>
-        <MapView
-          provider={"osmdroid"}
-          region={{
-            latitude: position.lat,
-            longitude: position.lon,
-            latitudeDelta: LATITUDE_DELTA,
-            longitudeDelta: LONGITUDE_DELTA,
-            
-          }}
-          showsUserLocation={true}
-          showsScale={true}
-          showsMyLocationButton={true}
-          style={styles.map}
-          showsPointsOfInterest={true}
-          showsCompass={true}
-        >
-          <Marker
-            coordinate={{latitude: position.lat, longitude: position.lon, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA}}
-            title={'TESTE'}
-            description={'TESTE'}
-            pinColor="#ffffff"
-          />
-        </MapView>
+const Map = ({position}: MapProps) => {
+  console.log('carregou mapa!');
+  const [regionObj, setRegionObj] = useState<RegionType>(
+    {
+      latitude: position.lat,
+      longitude: position.lon,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA
+    }
+  );
+  const [map, setMap] = useState<MapView>();
+
+  useEffect(() => {
+    console.log('use effect do mapa');
+    setRegionObj(
+      {
+        latitude: position.lat,
+        longitude: position.lon,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA
+    });
+    map?.animateCamera({
+      center: {
+        latitude: position.lat,
+        longitude: position.lon,
+      }
+    })
+  }, [position])
+
+  return (
+    <View style={styles.container}>
+      <MapView
+        provider={"osmdroid"}
+        initialRegion={regionObj}
+        ref={ref => {if(ref){setMap(ref)}}}
+        showsUserLocation={true}
+        showsScale={true}
+        showsMyLocationButton={true}
+        maxZoomLevel={20}
+        minZoomLevel={7}
+        style={styles.map}
+      >
+        <Marker
+          coordinate={regionObj}
+          title="TESTE"
+          description="TESTE"
+        />
+      </MapView>
+      <View style={styles.button}>
+        <Button title="test button" onPress={() => {
+            map?.animateCamera({
+              center: {
+                  latitude: position.lat,
+                  longitude: position.lon,
+              }
+            }, {duration: 300})
+          }
+        }/>
       </View>
-    );
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -58,8 +96,20 @@ const styles = StyleSheet.create({
   },
   map: {
     width,
-    height
+    height,
+    maxHeight: height
   },
+  button: {
+    position: 'absolute',
+    left: 0,
+    bottom: '10%',
+    padding: 0,
+    margin: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%'
+  }
 });
 
 export default Map;
