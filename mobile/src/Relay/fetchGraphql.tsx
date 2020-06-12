@@ -1,6 +1,12 @@
 import config from "../config";
 import { RequestParameters, Variables } from "relay-runtime";
+import { AsyncStorage } from "react-native";
 
+
+async function getUniqueId() {
+    const identifier = await AsyncStorage.getItem('identifier');
+    return identifier ? identifier : '';
+};
 
 async function fetchGraphQL(request: RequestParameters, variables: Variables) {
 
@@ -8,7 +14,8 @@ async function fetchGraphQL(request: RequestParameters, variables: Variables) {
         method: 'POST',
         headers: {
             Accept: 'application/json',
-            'Content-type': 'application/json'
+            'Content-type': 'application/json',
+            Authorization: await getUniqueId()
         },
         body: JSON.stringify({
             query: request.text,

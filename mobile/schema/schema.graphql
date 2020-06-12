@@ -33,6 +33,6 @@ type NewCovidPositionPayload {
 
 """Graphql type for queries"""
 type QueryType {
-  helloWorld: String
+  myCovidPosition: CovidPositionType
 }
 
