@@ -3,30 +3,32 @@ schema {
   mutation: MutationType
 }
 
-"""Mutation types"""
-type MutationType {
-  """New position mutation"""
-  NewPosition(input: NewPositionInput!): NewPositionPayload
-}
-
-input NewPositionInput {
-  device: String
-  lat: Float
-  lon: Float
-  clientMutationId: String
-}
-
-type NewPositionPayload {
-  createdPosition: PositionType
-  clientMutationId: String
-}
-
-"""Position"""
-type PositionType {
+"""Covid Position"""
+type CovidPositionType {
+  covidSituation: String
   lat: Float
   lon: Float
   createdAt: String
   updatedAt: String
+}
+
+"""Mutation types"""
+type MutationType {
+  """New CovidPosition mutation"""
+  NewCovidPosition(input: NewCovidPositionInput!): NewCovidPositionPayload
+}
+
+input NewCovidPositionInput {
+  device: String
+  covidSituation: String
+  lat: Float
+  lon: Float
+  clientMutationId: String
+}
+
+type NewCovidPositionPayload {
+  createdCovidPosition: CovidPositionType
+  clientMutationId: String
 }
 
 """Graphql type for queries"""

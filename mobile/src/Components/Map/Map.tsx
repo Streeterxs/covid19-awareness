@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 
 import MapView, {Marker} from 'react-native-maps-osmdroid';
-import { Position } from '../../App';
+import { CovidPosition } from '../../App';
 
 
 const { width, height } = Dimensions.get('window');
@@ -16,7 +16,7 @@ const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 type MapProps = {
-  position: Position
+  position: CovidPosition
 };
 
 type RegionType = {

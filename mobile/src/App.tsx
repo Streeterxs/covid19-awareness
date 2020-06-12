@@ -39,10 +39,10 @@ const helloWorldQuery = graphql`
   }
 `;
 
-const newPositionMutation = graphql`
-  mutation AppNewPositionMutation($device: String!, $lat: Float!, $lon: Float!) {
-    NewPosition(input: {device: $device, lat: $lat, lon: $lon, clientMutationId: "1"}) {
-      createdPosition {
+const newCovidPositionMutation = graphql`
+  mutation AppNewCovidPositionMutation($device: String!, $covidSituation: String!, $lat: Float!, $lon: Float!) {
+    NewCovidPosition(input: {device: $device, covidSituation: $covidSituation, lat: $lat, lon: $lon, clientMutationId: "1"}) {
+      createdCovidPosition {
         lat
         lon
         createdAt
@@ -52,16 +52,18 @@ const newPositionMutation = graphql`
   }
 `;
 
-export type Position = {
+export type CovidPosition = {
   device: string;
+  covidSituation: string;
   lat: number;
   lon: number;
 };
 const App = () => {
   // New Position Mutation
-  const [newPositionCommit, newPositionIsInFlight] = useMutation(newPositionMutation);
-  const [position, setPosition] = useState<Position>({
+  const [newCovidPositionCommit, newCovidPositionIsInFlight] = useMutation(newCovidPositionMutation);
+  const [covidPosition, setCovidPosition] = useState<CovidPosition>({
     device: getUniqueId(),
+    covidSituation: 'diseased',
     lat: -14.2350044,
     lon: -51.9252815
   });
@@ -74,18 +76,30 @@ const App = () => {
   const {watchLocation, stopWatchLocation} = geolocationModule();
 
   useEffect(() => {
-    showDialogAndroid(() => {
+    showDialogAndroid((covidSituationReturned) => {
+
+      setCovidPosition({
+        ...covidPosition,
+        covidSituation: covidSituationReturned
+      });
 
       watchLocation((watchPosition) => {
-
-        setPosition({
-          ...position,
+        
+        setCovidPosition({
+          ...covidPosition,
           lat: watchPosition.coords.latitude,
           lon: watchPosition.coords.longitude
         });
 
-        newPositionCommit({
-          variables: {...position},
+        const covidPositionCopy = {
+          ...covidPosition,
+          covidSituation: covidSituationReturned,
+          lat: watchPosition.coords.latitude,
+          lon: watchPosition.coords.longitude
+        };
+
+        newCovidPositionCommit({
+          variables: {...covidPositionCopy},
           onCompleted: () => {
             
           }
@@ -94,7 +108,7 @@ const App = () => {
       });
   
       setTimeout(() => {
-        setPosition({...position, lat: -14.2350044, lon: -51.9252815});
+        setCovidPosition({...covidPosition, lat: -14.2350044, lon: -51.9252815});
       }, 5000);
   
     });
@@ -117,7 +131,7 @@ const App = () => {
           )}
           <View style={styles.body}>
             <Text>Testando testando</Text>
-            <Map position={position}/>
+            <Map position={covidPosition}/>
           </View>
         </ScrollView>
       </SafeAreaView>

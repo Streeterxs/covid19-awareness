@@ -1,23 +1,37 @@
 // @ts-ignore
 import DialogAndroid from 'react-native-dialogs';
 
+export type OnSituationReport = {
+    (covidSituation: string): void
+}
+
 const dialogModule = () => {
     
-    const showDialogAndroid = async (onDismiss: () => void) => {
-        const { action } = await DialogAndroid.alert('Title', 'Message');
-        switch (action) {
-            case DialogAndroid.actionPositive:
-                console.log('positive!')
+    const showDialogAndroid = async (onSituationReport: OnSituationReport) => {
+        const { selectedItem } = await DialogAndroid.showPicker('Report your Covid Condition: ', null, {
+            type: DialogAndroid.listRadio,
+            selectedId: 'diseased',
+            items: [
+                {label: 'Diseased Confirmed', id: 'diseased'},
+                {label: 'Diseased Suspect', id: 'suspect'},
+                {label: 'Negative', id: 'negative'}
+            ]
+        });
+        switch (selectedItem?.id) {
+            case 'diseased':
+                await onSituationReport(selectedItem.id);
+                console.log('diseased!')
                 break;
-            case DialogAndroid.actionNegative:
+            case 'suspect':
+                await onSituationReport(selectedItem.id);
+                console.log('suspect!')
+                break;
+            case 'negative':
+                await onSituationReport(selectedItem.id);
                 console.log('negative!')
                 break;
-            case DialogAndroid.actionNeutral:
-                console.log('neutral!')
-                break;
-            case DialogAndroid.actionDismiss:
-                onDismiss();
-                console.log('dismissed!');
+            default:
+                console.log('default!');
                 break;
         }
     }
