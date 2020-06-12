@@ -11,6 +11,8 @@ import graphqlHttp from 'koa-graphql';
 import { GraphQLError } from 'graphql';
 
 import Schema from './schema/Schema';
+import { ICovidPosition } from './modules/covidPosition/CovidPositionModel';
+import getCurrentUser from './auth';
 
 dotenv.config({path: path.join(__dirname, '/./../.env')});
 
@@ -25,9 +27,14 @@ app.use(cors());
 
 const graphqlSettings = async (req: any) => {
 
+    const me: ICovidPosition | {me: null} = await getCurrentUser(req.headers.authorization);
     return {
         graphql: true,
         schema: Schema,
+        context: {
+            me,
+            req
+        },
         formatError: (error: GraphQLError) => {
             return {
                 message: error.message,
