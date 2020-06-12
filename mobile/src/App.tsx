@@ -91,7 +91,7 @@ const App = () => {
           lon: watchPosition.coords.longitude
         });
 
-        const covidPositionCopy = {
+        /* const covidPositionCopy = {
           ...covidPosition,
           covidSituation: covidSituationReturned,
           lat: watchPosition.coords.latitude,
@@ -103,7 +103,7 @@ const App = () => {
           onCompleted: () => {
             
           }
-        });
+        }); */
 
       });
   
@@ -130,7 +130,6 @@ const App = () => {
             </View>
           )}
           <View style={styles.body}>
-            <Text>Testando testando</Text>
             <Map position={covidPosition}/>
           </View>
         </ScrollView>

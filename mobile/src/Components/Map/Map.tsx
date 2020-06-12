@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-    View, Dimensions, StyleSheet,Text, Button
+    View, Dimensions, StyleSheet, Button
 } from 'react-native';
 
-import MapView, {Marker} from 'react-native-maps-osmdroid';
+import MapView, {Marker} from 'react-native-maps';
 import { CovidPosition } from '../../App';
 
 
@@ -58,7 +58,6 @@ const Map = ({position}: MapProps) => {
   return (
     <View style={styles.container}>
       <MapView
-        provider={"osmdroid"}
         initialRegion={regionObj}
         ref={ref => {if(ref){setMap(ref)}}}
         showsUserLocation={true}

@@ -132,6 +132,7 @@ android {
         applicationId "com.mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        manifestPlaceholders = [API_KEY: "$System.env.GOOGLE_API_KEY"]
         versionCode 1
         versionName "1.0"
     }

@@ -5275,9 +5275,10 @@ react-native-geolocation-service@^4.0.2:
   dependencies:
     "@react-native-community/geolocation" "^1.4.2"
 
-"react-native-maps-osmdroid@https://github.com/fqborges/react-native-maps-osmdroid.git":
-  version "0.26.1-unreleased"
-  resolved "https://github.com/fqborges/react-native-maps-osmdroid.git#b92466d2c6df3b64cae300f0b79170bec5dd0267"
+react-native-maps@0.27.1:
+  version "0.27.1"
+  resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-0.27.1.tgz#2f10cd417bb2fd938c9e015b1c9b6d9b1a44b97f"
+  integrity sha512-HygBkZBecTnIVRYrSiLRAvu4OmXOYso/A7c6Cy73HkOh9CgGV8Ap5eBea24tvmFGptjj5Hg8AJ94/YbmWK1Okw==
 
 react-native@0.62.2:
   version "0.62.2"
