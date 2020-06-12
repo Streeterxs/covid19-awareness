@@ -16,7 +16,8 @@ const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 type MapProps = {
-  position: CovidPosition
+  position: CovidPosition,
+  situationUpdate: () => void
 };
 
 type RegionType = {
@@ -26,7 +27,7 @@ type RegionType = {
   longitudeDelta: number
 }
 
-const Map = ({position}: MapProps) => {
+const Map = ({position, situationUpdate}: MapProps) => {
   console.log('carregou mapa!');
   const [regionObj, setRegionObj] = useState<RegionType>(
     {
@@ -39,7 +40,7 @@ const Map = ({position}: MapProps) => {
   const [map, setMap] = useState<MapView>();
 
   useEffect(() => {
-    console.log('use effect do mapa');
+    console.log('use effect do mapa: ', position);
     setRegionObj(
       {
         latitude: position.lat,
@@ -60,8 +61,7 @@ const Map = ({position}: MapProps) => {
       <MapView
         initialRegion={regionObj}
         ref={ref => {if(ref){setMap(ref)}}}
-        showsUserLocation={true}
-        showsScale={true}
+        showsScale={false}
         showsMyLocationButton={true}
         maxZoomLevel={20}
         minZoomLevel={7}
@@ -69,12 +69,12 @@ const Map = ({position}: MapProps) => {
       >
         <Marker
           coordinate={regionObj}
-          title="TESTE"
-          description="TESTE"
+          title="Me"
+          pinColor="teal"
         />
       </MapView>
       <View style={styles.button}>
-        <Button title="test button" onPress={() => {
+        <Button title="my position" onPress={() => {
             map?.animateCamera({
               center: {
                   latitude: position.lat,
@@ -83,6 +83,7 @@ const Map = ({position}: MapProps) => {
             }, {duration: 300})
           }
         }/>
+        <Button title="my situation" onPress={situationUpdate}/>
       </View>
     </View>
   );

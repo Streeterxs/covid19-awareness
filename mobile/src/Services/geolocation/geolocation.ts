@@ -64,7 +64,8 @@ const geolocationModule = () => {
 
     return {
         watchLocation,
-        stopWatchLocation
+        stopWatchLocation,
+        isWatching: watchObject.isWatching
     }
 }
 

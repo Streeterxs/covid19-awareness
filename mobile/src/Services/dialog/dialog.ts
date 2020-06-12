@@ -1,5 +1,6 @@
 // @ts-ignore
 import DialogAndroid from 'react-native-dialogs';
+import { ToastAndroid } from 'react-native';
 
 export type OnSituationReport = {
     (covidSituation: string): void
@@ -31,6 +32,10 @@ const dialogModule = () => {
                 console.log('negative!')
                 break;
             default:
+                ToastAndroid.show(
+                    'Report your situation to track your position.',
+                    ToastAndroid.LONG,
+                );
                 console.log('default!');
                 break;
         }

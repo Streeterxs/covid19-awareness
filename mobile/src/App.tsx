@@ -73,46 +73,94 @@ const App = () => {
     fetchPolicy: 'store-or-network'
   });
 
-  const {watchLocation, stopWatchLocation} = geolocationModule();
+  const {watchLocation, stopWatchLocation, isWatching} = geolocationModule();
 
-  useEffect(() => {
+  const covidSituationHandler = (callback: (covidPositionObj: CovidPosition) => void, covidPositionObj?: CovidPosition) => {
+
     showDialogAndroid((covidSituationReturned) => {
 
-      setCovidPosition({
+      let covidPositionCopy = {
         ...covidPosition,
         covidSituation: covidSituationReturned
-      });
+      };
 
-      watchLocation((watchPosition) => {
-        
-        setCovidPosition({
-          ...covidPosition,
-          lat: watchPosition.coords.latitude,
-          lon: watchPosition.coords.longitude
-        });
+      if (covidPositionObj) {
 
-        /* const covidPositionCopy = {
-          ...covidPosition,
-          covidSituation: covidSituationReturned,
-          lat: watchPosition.coords.latitude,
-          lon: watchPosition.coords.longitude
+        covidPositionCopy = {
+          ...covidPositionObj,
+          covidSituation: covidSituationReturned
         };
 
-        newCovidPositionCommit({
-          variables: {...covidPositionCopy},
-          onCompleted: () => {
-            
-          }
-        }); */
+        setCovidPosition({
+          ...covidPositionCopy
+        });
 
-      });
+        callback(covidPositionCopy);
+        return;
   
-      setTimeout(() => {
-        setCovidPosition({...covidPosition, lat: -14.2350044, lon: -51.9252815});
-      }, 5000);
+      }
+
+      setCovidPosition({
+        ...covidPositionCopy
+      });
+
+      callback(covidPositionCopy);
+      return;
   
     });
 
+  };
+
+  const covidPositionHandler = (callback: (covidPositionObj: CovidPosition) => void, covidPositionObj?: CovidPosition) => {
+
+    watchLocation((watchPosition) => {
+
+      let covidPositionCopy = {
+        ...covidPosition,
+        lat: watchPosition.coords.latitude,
+        lon: watchPosition.coords.longitude
+      };
+
+      if (covidPositionObj) {
+
+        covidPositionCopy = {
+          ...covidPositionObj,
+          lat: watchPosition.coords.latitude,
+          lon: watchPosition.coords.longitude
+        };
+        
+        setCovidPosition({
+          ...covidPositionCopy
+        });
+
+        callback(covidPositionCopy);
+        return;
+      }
+        
+      setCovidPosition({
+        ...covidPositionCopy
+      });
+
+      callback(covidPositionCopy);
+      return;
+    });
+  };
+
+  const commitNewPosition = (covidPositionObj: CovidPosition) => {
+    newCovidPositionCommit({
+      variables: {...covidPositionObj},
+      onCompleted: (teste) => {
+        console.log(teste);
+      }
+    })
+  }
+
+  useEffect(() => {
+
+    let covidPositionObj = {
+      ...covidPosition
+    };
+    covidSituationHandler((covidObj) => covidPositionHandler(commitNewPosition, covidObj), covidPositionObj);
 
     return () => {
       stopWatchLocation();
@@ -130,7 +178,21 @@ const App = () => {
             </View>
           )}
           <View style={styles.body}>
-            <Map position={covidPosition}/>
+            <Map position={covidPosition} situationUpdate={() => {
+
+                if(!isWatching) {
+
+                  let covidPositionObj = {
+                    ...covidPosition
+                  };
+                  covidSituationHandler((covidObj) => covidPositionHandler(commitNewPosition, covidObj), covidPositionObj);
+
+                  return;
+                }
+
+                covidSituationHandler(commitNewPosition);
+
+              }}/>
           </View>
         </ScrollView>
       </SafeAreaView>
