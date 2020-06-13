@@ -1,10 +1,14 @@
 import {fetchGraphQL} from './fetchGraphql';
 import { Network, Environment, Store, RecordSource } from 'relay-runtime';
+import setupWrapper from './subscriptionFn';
 
-const network = Network.create(fetchGraphQL);
+const networkWrapper = () => {
+    const network = Network.create(fetchGraphQL, setupWrapper());
+    return network;
+}
 
 const environment = new Environment({
-    network,
+    network: networkWrapper(),
     store: new Store(new RecordSource())
 });
 

@@ -22,7 +22,8 @@
     "react-native-maps": "0.27.1",
     "react-relay": "^0.0.0-experimental-895a6fe0",
     "relay-compiler-language-typescript": "^12.0.3",
-    "relay-runtime": "^9.1.0"
+    "relay-runtime": "^9.1.0",
+    "subscriptions-transport-ws": "^0.9.16"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
