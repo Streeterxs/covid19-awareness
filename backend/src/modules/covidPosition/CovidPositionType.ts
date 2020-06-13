@@ -1,10 +1,12 @@
 import { GraphQLObjectType, GraphQLString, GraphQLFloat } from "graphql";
 import { ICovidPosition } from "./CovidPositionModel";
+import { globalIdField, connectionDefinitions } from "graphql-relay";
 
 const CovidPositionType = new GraphQLObjectType({
     name: 'CovidPositionType',
     description: 'Covid Position',
     fields: {
+        id: globalIdField('CovidPosition'),
         covidSituation: {
             type: GraphQLString,
             resolve: (covidPosition: ICovidPosition) => covidPosition.covidSituation
@@ -27,5 +29,8 @@ const CovidPositionType = new GraphQLObjectType({
         }
     }
 });
+
+export const {connectionType: CovidPositionsConnection} =
+        connectionDefinitions({nodeType: CovidPositionType});
 
 export default CovidPositionType

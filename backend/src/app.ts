@@ -49,6 +49,10 @@ const graphqlSettings = async (req: any) => {
 }
 
 const graphqlHttpServer = graphqlHttp(graphqlSettings);
+/* const graphqlHttpServer = graphqlHttp({
+    graphiql: true,
+    schema: Schema
+}); */
 router.all('/graphql', graphqlHttpServer);
 router.all('/graphql', koaPlayground({
     endpoint: 'graphql',
