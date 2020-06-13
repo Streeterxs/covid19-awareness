@@ -2,11 +2,14 @@ import dotenv from 'dotenv';
 import path from 'path';
 import mongoose from 'mongoose';
 
+import { PubSub } from 'graphql-subscriptions';
+
 import Router from 'koa-router';
 import Koa from 'koa';
 import logger from 'koa-logger';
 import cors from 'kcors';
 import graphqlHttp from 'koa-graphql';
+import koaPlayground from 'graphql-playground-middleware-koa';
 
 import { GraphQLError } from 'graphql';
 
@@ -47,7 +50,14 @@ const graphqlSettings = async (req: any) => {
 
 const graphqlHttpServer = graphqlHttp(graphqlSettings);
 router.all('/graphql', graphqlHttpServer);
+router.all('/graphql', koaPlayground({
+    endpoint: 'graphql',
+    subscriptionEndpoint: '/subscriptions'
+}));
 
 app.use(router.routes()).use(router.allowedMethods());
 
 export default app;
+
+const pubsub = new PubSub();
+export { pubsub };

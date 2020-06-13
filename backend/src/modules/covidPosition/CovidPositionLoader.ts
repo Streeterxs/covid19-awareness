@@ -9,3 +9,8 @@ export const covidPositionDeviceLoader = async (device: string) => {
     const covidPositionFinded = await CovidPosition.findOne({device});
     return covidPositionFinded;
 };
+
+export const covidPositionsButMeLoader = async (device: string) => {
+    const covidPositionsFinded = await CovidPosition.find({device: {$ne: device}})
+    return covidPositionsFinded;
+}

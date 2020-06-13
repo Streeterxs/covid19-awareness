@@ -4,6 +4,7 @@ import { GraphQLString, GraphQLFloat } from "graphql";
 import CovidPositionType from "../CovidPositionType";
 import {covidPositionLoader} from "../CovidPositionLoader";
 import CovidPosition from "../CovidPositionModel";
+import { pubsub } from "../../../app";
 
 type MutationInputs = {
     device: string,
@@ -47,6 +48,7 @@ const NewCovidPosition = mutationWithClientMutationId({
 
                 console.log(findedCovidPosition);
                 await findedCovidPosition.save();
+                pubsub.publish('newCovidPosition', findedCovidPosition);
                 return findedCovidPosition;
 
             }
@@ -55,6 +57,7 @@ const NewCovidPosition = mutationWithClientMutationId({
 
             console.log(covidPositionCreated);
             await covidPositionCreated.save();
+            pubsub.publish('newCovidPosition', findedCovidPosition);
             return covidPositionCreated;
         } catch (err) {
             console.log(err);
