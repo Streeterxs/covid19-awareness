@@ -5,6 +5,7 @@ import {
 
 import MapView, {Marker} from 'react-native-maps';
 import { CovidPosition } from '../../App';
+import { covidPositionsSubscriptionModule } from '../../Services/subscriptions';
 
 
 const { width, height } = Dimensions.get('window');
@@ -39,8 +40,10 @@ const Map = ({myPosition, otherCovidPositions, situationUpdate}: MapProps) => {
     }
   );
   const [map, setMap] = useState<MapView>();
+  const {dispose, subscribe} = covidPositionsSubscriptionModule();
 
   useEffect(() => {
+    subscribe()
     console.log('use effect do mapa: ', myPosition);
     setRegionObj(
       {
@@ -54,7 +57,11 @@ const Map = ({myPosition, otherCovidPositions, situationUpdate}: MapProps) => {
         latitude: myPosition.lat,
         longitude: myPosition.lon,
       }
-    })
+    });
+
+    return () => {
+      dispose();
+    }
   }, [myPosition]);
 
   const pinColorSituationHandler = (covidSituation: string) => {
@@ -83,7 +90,8 @@ const Map = ({myPosition, otherCovidPositions, situationUpdate}: MapProps) => {
       >
         <Marker
           coordinate={regionObj}
-          title="Me"
+          title="Your position"
+          description={`Situation: ${myPosition.covidSituation}`}
           pinColor="indigo"
         />
         {
