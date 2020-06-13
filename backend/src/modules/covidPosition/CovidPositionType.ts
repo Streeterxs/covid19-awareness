@@ -19,6 +19,10 @@ const CovidPositionType = new GraphQLObjectType({
             type: GraphQLFloat,
             resolve: (covidPosition: ICovidPosition) => covidPosition.lon
         },
+        device: {
+            type: GraphQLString,
+            resolve: (covidPosition: ICovidPosition) => covidPosition.device
+        },
         createdAt: {
             type: GraphQLString,
             resolve: (covidPosition: ICovidPosition) => covidPosition.createdAt

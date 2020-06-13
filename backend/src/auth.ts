@@ -10,6 +10,7 @@ const getCurrentUser: getCurrentUserType = async (identifier: string) => {
         const covidPositionFinded = await covidPositionDeviceLoader(identifier);
         return covidPositionFinded
     } catch(err) {
+        console.log('error: ', err);
         return {me: null}
     }
 };
