@@ -29,6 +29,8 @@ type RegionType = {
   longitudeDelta: number
 }
 
+const {dispose, subscribe} = covidPositionsSubscriptionModule();
+
 const Map = ({myPosition, otherCovidPositions, situationUpdate}: MapProps) => {
   console.log('carregou mapa!');
   const [regionObj, setRegionObj] = useState<RegionType>(
@@ -40,7 +42,6 @@ const Map = ({myPosition, otherCovidPositions, situationUpdate}: MapProps) => {
     }
   );
   const [map, setMap] = useState<MapView>();
-  const {dispose, subscribe} = covidPositionsSubscriptionModule();
 
   useEffect(() => {
     subscribe()

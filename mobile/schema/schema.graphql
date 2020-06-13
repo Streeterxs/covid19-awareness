@@ -15,9 +15,12 @@ type CovidPositionSubscriptionPayload {
 
 """Covid Position"""
 type CovidPositionType {
+  """The ID of an object"""
+  id: ID!
   covidSituation: String
   lat: Float
   lon: Float
+  device: String
   createdAt: String
   updatedAt: String
 }
@@ -41,8 +44,25 @@ type NewCovidPositionPayload {
   clientMutationId: String
 }
 
+"""An object with an ID"""
+interface Node {
+  """The id of the object."""
+  id: ID!
+}
+
 """Graphql type for queries"""
 type QueryType {
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Fetches objects given their IDs"""
+  nodes(
+    """The IDs of objects"""
+    ids: [ID!]!
+  ): [Node]!
   myCovidPosition: CovidPositionType
   allCovidPositionsButMe: [CovidPositionType]
 }

@@ -8,7 +8,7 @@
  * @format
  */
 
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -35,6 +35,7 @@ const myCovidPositionQuery = graphql`
     myCovidPosition  {
       lat
       lon
+      device
       covidSituation
       createdAt
       updatedAt
@@ -48,6 +49,7 @@ const newCovidPositionMutation = graphql`
       createdCovidPosition {
         lat
         lon
+        device
         covidSituation
         createdAt
         updatedAt
@@ -56,11 +58,20 @@ const newCovidPositionMutation = graphql`
   }
 `;
 
+const {
+  initialHandler,
+  covidPositionHandler,
+  covidSituationHandler,
+  stopWatchLocation,
+  isWatching } = covidPositionModule();
+
 export type CovidPosition = {
   device: string;
   covidSituation: string;
   lat: number;
   lon: number;
+  createdAt: string;
+  updatedAt: string;
 };
 const App = () => {
   // New Position Mutation
@@ -69,25 +80,22 @@ const App = () => {
   const {myCovidPosition}: any = useLazyLoadQuery(myCovidPositionQuery, {}, {
     fetchPolicy: 'store-or-network'
   });
-
-  const {
-    initialHandler,
-    covidPositionHandler,
-    covidSituationHandler,
-    deviceHandler,
-    stopWatchLocation,
-    isWatching } = covidPositionModule();
+  
 
   const commitNewPosition = (covidPositionObj: CovidPosition) => {
     newCovidPositionCommit({
       variables: {...covidPositionObj},
-      onCompleted: (teste) => {
-        console.log(teste);
+      onCompleted: (response) => {
+        console.log('response: ', response);
+      },
+      onError: (err) => {
+        console.log('err: ', err);
       }
     });
   }
 
   useEffect(() => {
+    console.log('app render');
 
     initialHandler(commitNewPosition, myCovidPosition);
 
@@ -108,13 +116,11 @@ const App = () => {
           )}
           <View style={styles.body}>
             <Map myPosition={myCovidPosition} otherCovidPositions={[]} situationUpdate={() => {
-
-                if(!isWatching) {
+                if(!isWatching()) {
                   covidSituationHandler((covidObj) => covidPositionHandler(commitNewPosition, covidObj), myCovidPosition);
 
                   return;
                 }
-
                 covidSituationHandler(commitNewPosition, myCovidPosition);
 
               }}/>

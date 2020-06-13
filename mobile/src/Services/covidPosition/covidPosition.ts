@@ -1,6 +1,6 @@
 import { CovidPosition } from "../../App";
-import { geolocationModule } from "..";
-import { dialogModule } from "..";
+import { geolocationModule } from "../geolocation";
+import { dialogModule } from "../dialog";
 import { Device } from '../Device';
 
 const covidPositionModule = () => {
