@@ -56,7 +56,7 @@ const setupWrapper = () => {
                         }
                     });
                 }
-            return {
+                return {
                     unsubscribe: () => {
                         if (subscription) {
                             subscriptionClient.close();
@@ -64,8 +64,8 @@ const setupWrapper = () => {
                         }
                     }
                 }
-        }
-    };
+            }
+        };
     
         return (Observable.from(subscribable as Subscribable<ExecutionResult>) as RelayObservable<GraphQLResponse> | Disposable);
     }
