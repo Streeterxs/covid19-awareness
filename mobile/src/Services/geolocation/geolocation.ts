@@ -1,5 +1,6 @@
 import Geolocation from 'react-native-geolocation-service';
 import { locationPermissionModule } from '../permissions';
+import { ToastAndroid } from 'react-native';
 
 type WatchObject = {
     isWatching: boolean,
@@ -36,6 +37,11 @@ const geolocationModule = () => {
         positionChange?: (position: Geolocation.GeoPosition) => void,
         notPermited?: (message: string) => void
     ) => {
+        ToastAndroid.show(
+            'Your position is now being tracked.',
+            ToastAndroid.LONG,
+        );
+
         if (!(await locatPermissionChecker())) {
             if (notPermited) notPermited('Permission has not been granted');
             return;

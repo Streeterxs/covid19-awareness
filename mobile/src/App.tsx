@@ -8,19 +8,16 @@
  * @format
  */
 
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
   View,
-  Text,
-  Button
+  Text
 } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 
 import {
-  Header,
   Colors
 } from 'react-native/Libraries/NewAppScreen';
 
@@ -28,9 +25,7 @@ import { RelayEnvironmentProvider, useLazyLoadQuery, useMutation } from 'react-r
 import { graphql } from 'react-relay';
 
 import environment from './Relay/environment';
-import {geolocationModule, dialogModule} from './Services';
 import { Map } from './Components';
-import { getUniqueId, getManufacturer } from 'react-native-device-info';
 import { covidPositionModule } from './Services/covidPosition';
 
 declare const global: {HermesInternal: null | {}};
@@ -112,7 +107,7 @@ const App = () => {
             </View>
           )}
           <View style={styles.body}>
-            <Map position={myCovidPosition} situationUpdate={() => {
+            <Map myPosition={myCovidPosition} otherCovidPositions={[]} situationUpdate={() => {
 
                 if(!isWatching) {
                   covidSituationHandler((covidObj) => covidPositionHandler(commitNewPosition, covidObj), myCovidPosition);

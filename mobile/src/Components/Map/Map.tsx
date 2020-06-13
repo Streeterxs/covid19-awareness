@@ -16,7 +16,8 @@ const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 type MapProps = {
-  position: CovidPosition,
+  myPosition: CovidPosition,
+  otherCovidPositions: CovidPosition[],
   situationUpdate: () => void
 };
 
@@ -27,12 +28,12 @@ type RegionType = {
   longitudeDelta: number
 }
 
-const Map = ({position, situationUpdate}: MapProps) => {
+const Map = ({myPosition, otherCovidPositions, situationUpdate}: MapProps) => {
   console.log('carregou mapa!');
   const [regionObj, setRegionObj] = useState<RegionType>(
     {
-      latitude: position.lat,
-      longitude: position.lon,
+      latitude: myPosition.lat,
+      longitude: myPosition.lon,
       latitudeDelta: LATITUDE_DELTA,
       longitudeDelta: LONGITUDE_DELTA
     }
@@ -40,21 +41,34 @@ const Map = ({position, situationUpdate}: MapProps) => {
   const [map, setMap] = useState<MapView>();
 
   useEffect(() => {
-    console.log('use effect do mapa: ', position);
+    console.log('use effect do mapa: ', myPosition);
     setRegionObj(
       {
-        latitude: position.lat,
-        longitude: position.lon,
+        latitude: myPosition.lat,
+        longitude: myPosition.lon,
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA
     });
     map?.animateCamera({
       center: {
-        latitude: position.lat,
-        longitude: position.lon,
+        latitude: myPosition.lat,
+        longitude: myPosition.lon,
       }
     })
-  }, [position])
+  }, [myPosition]);
+
+  const pinColorSituationHandler = (covidSituation: string) => {
+    switch (covidSituation) {
+      case 'diseased':
+        return 'tomato';
+      case 'suspect':
+        return 'yellow';
+      case 'negative':
+        return 'teal';
+      default:
+        return 'tomato';
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -70,15 +84,27 @@ const Map = ({position, situationUpdate}: MapProps) => {
         <Marker
           coordinate={regionObj}
           title="Me"
-          pinColor="teal"
+          pinColor="indigo"
         />
+        {
+          otherCovidPositions?.map(covidPosition => {
+            return <Marker
+              coordinate={{
+                latitude: covidPosition.lat,
+                longitude: covidPosition.lon
+              }}
+              title={`Situation: ${covidPosition.covidSituation}`}
+              pinColor={pinColorSituationHandler(covidPosition.covidSituation)}
+            />
+          })
+        }
       </MapView>
       <View style={styles.button}>
         <Button title="my position" onPress={() => {
             map?.animateCamera({
               center: {
-                  latitude: position.lat,
-                  longitude: position.lon,
+                  latitude: myPosition.lat,
+                  longitude: myPosition.lon,
               }
             }, {duration: 300})
           }
