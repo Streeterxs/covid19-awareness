@@ -12,6 +12,7 @@
     "relay": "yarn run relay-compiler --schema ./schema/schema.graphql --src ./src/ --watchman false $@ --language typescript"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.11.0",
     "react": "16.11.0",
     "react-native": "0.62.2",
     "react-native-device-info": "^5.6.1",

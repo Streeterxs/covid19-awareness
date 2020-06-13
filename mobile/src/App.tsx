@@ -15,9 +15,9 @@ import {
   ScrollView,
   View,
   Text,
-  Button,
-  AsyncStorage
+  Button
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import {
   Header,
@@ -31,6 +31,7 @@ import environment from './Relay/environment';
 import {geolocationModule, dialogModule} from './Services';
 import { Map } from './Components';
 import { getUniqueId, getManufacturer } from 'react-native-device-info';
+import { covidPositionModule } from './Services/covidPosition';
 
 declare const global: {HermesInternal: null | {}};
 
@@ -66,47 +67,21 @@ export type CovidPosition = {
   lat: number;
   lon: number;
 };
-const App = ({device}: {device: string}) => {
+const App = () => {
   // New Position Mutation
   const [newCovidPositionCommit, newCovidPositionIsInFlight] = useMutation(newCovidPositionMutation);
-  const {showDialogAndroid} = dialogModule();
 
   const {myCovidPosition}: any = useLazyLoadQuery(myCovidPositionQuery, {}, {
     fetchPolicy: 'store-or-network'
   });
 
-  const {watchLocation, stopWatchLocation, isWatching} = geolocationModule();
-
-  const covidSituationHandler = (callback: (covidPositionObj: CovidPosition) => void, covidPositionObj: CovidPosition) => {
-
-    showDialogAndroid((covidSituationReturned) => {
-
-      let covidPositionCopy = {
-        ...covidPositionObj,
-        covidSituation: covidSituationReturned
-      };
-
-      callback(covidPositionCopy);
-      return;
-  
-    });
-
-  };
-
-  const covidPositionHandler = (callback: (covidPositionObj: CovidPosition) => void, covidPositionObj: CovidPosition) => {
-
-    watchLocation((watchPosition) => {
-
-      let covidPositionCopy = {
-        ...covidPositionObj,
-        lat: watchPosition.coords.latitude,
-        lon: watchPosition.coords.longitude
-      };
-
-      callback(covidPositionCopy);
-      return;
-    });
-  };
+  const {
+    initialHandler,
+    covidPositionHandler,
+    covidSituationHandler,
+    deviceHandler,
+    stopWatchLocation,
+    isWatching } = covidPositionModule();
 
   const commitNewPosition = (covidPositionObj: CovidPosition) => {
     newCovidPositionCommit({
@@ -114,17 +89,12 @@ const App = ({device}: {device: string}) => {
       onCompleted: (teste) => {
         console.log(teste);
       }
-    })
+    });
   }
 
   useEffect(() => {
 
-    console.log('myCovidPosition: ', myCovidPosition);
-    let covidPositionObj: CovidPosition = {
-      ...myCovidPosition,
-      device
-    };
-    covidSituationHandler((covidObj) => covidPositionHandler(commitNewPosition, covidObj), covidPositionObj);
+    initialHandler(commitNewPosition, myCovidPosition);
 
     return () => {
       stopWatchLocation();
@@ -145,11 +115,7 @@ const App = ({device}: {device: string}) => {
             <Map position={myCovidPosition} situationUpdate={() => {
 
                 if(!isWatching) {
-
-                  let covidPositionObj = {
-                    ...myCovidPosition
-                  };
-                  covidSituationHandler((covidObj) => covidPositionHandler(commitNewPosition, covidObj), covidPositionObj);
+                  covidSituationHandler((covidObj) => covidPositionHandler(commitNewPosition, covidObj), myCovidPosition);
 
                   return;
                 }
@@ -165,21 +131,6 @@ const App = ({device}: {device: string}) => {
 };
 
 const AppRoot = () => {
-  const [device, setDevice] = useState<string>(getUniqueId());
-
-  useEffect(() => {
-    const asyncStorageHandler = async () => {
-      const myIdentifier = await AsyncStorage.getItem('identifier');
-  
-      if(!myIdentifier) {
-        await AsyncStorage.setItem('identifier', device);
-        return;
-      }
-    };
-
-    asyncStorageHandler();
-
-  }, []);
 
   const fallback = (
     <Text>
@@ -189,7 +140,7 @@ const AppRoot = () => {
   return (
     <RelayEnvironmentProvider environment={environment}>
       <Suspense fallback={fallback}>
-        <App device={device}/>
+        <App/>
       </Suspense>
     </RelayEnvironmentProvider>
   )
