@@ -3,6 +3,7 @@ import {
     View, Dimensions, StyleSheet, Button
 } from 'react-native';
 
+
 import MapView, {Marker} from 'react-native-maps';
 import { CovidPosition } from '../../App';
 import { covidPositionsSubscriptionModule } from '../../Services/subscriptions';
@@ -108,17 +109,21 @@ const Map = ({myPosition, otherCovidPositions, situationUpdate}: MapProps) => {
           })
         }
       </MapView>
-      <View style={styles.button}>
-        <Button title="my position" onPress={() => {
-            map?.animateCamera({
-              center: {
-                  latitude: myPosition.lat,
-                  longitude: myPosition.lon,
-              }
-            }, {duration: 300})
-          }
-        }/>
-        <Button title="my situation" onPress={situationUpdate}/>
+      <View style={styles.buttons}>
+        <View style={styles.button}>
+          <Button title="my position" onPress={() => {
+              map?.animateCamera({
+                center: {
+                    latitude: myPosition.lat,
+                    longitude: myPosition.lon,
+                }
+              }, {duration: 300})
+            }
+          }/>
+        </View>
+        <View style={styles.button}>
+          <Button title="my situation" onPress={situationUpdate}/>
+        </View>
       </View>
     </View>
   );
@@ -134,16 +139,19 @@ const styles = StyleSheet.create({
     height,
     maxHeight: height
   },
-  button: {
+  buttons: {
     position: 'absolute',
     left: 0,
-    bottom: '10%',
     padding: 0,
     margin: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
     width: '100%'
+  },
+  button: {
+    margin: '10%'
   }
 });
 

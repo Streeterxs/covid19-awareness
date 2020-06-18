@@ -2,6 +2,7 @@ import { CovidPosition } from "../../App";
 import { geolocationModule } from "../geolocation";
 import { dialogModule } from "../dialog";
 import { Device } from '../Device';
+import { ToastAndroid } from "react-native";
 
 const covidPositionModule = () => {
     const {watchLocation, stopWatchLocation, isWatching} = geolocationModule();
@@ -40,6 +41,13 @@ const covidPositionModule = () => {
             callback(covidPositionCopy);
             return;
 
+        }, () => {
+            if (!isWatching()) {
+                ToastAndroid.show(
+                    'Report your situation to track your position.',
+                    ToastAndroid.LONG,
+                );
+            }
         });
   
     };

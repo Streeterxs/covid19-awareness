@@ -8,7 +8,8 @@ export type OnSituationReport = {
 
 const dialogModule = () => {
     
-    const showDialogAndroid = async (onSituationReport: OnSituationReport) => {
+    const showDialogAndroid = async (onSituationReport: OnSituationReport,
+        onDismiss: () => void) => {
         const { selectedItem } = await DialogAndroid.showPicker('Report your Covid Condition: ', null, {
             type: DialogAndroid.listRadio,
             selectedId: 'diseased',
@@ -32,11 +33,7 @@ const dialogModule = () => {
                 console.log('negative!')
                 break;
             default:
-                ToastAndroid.show(
-                    'Report your situation to track your position.',
-                    ToastAndroid.LONG,
-                );
-                console.log('default!');
+                onDismiss();
                 break;
         }
     }
