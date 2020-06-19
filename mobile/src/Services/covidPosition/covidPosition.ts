@@ -42,7 +42,7 @@ const covidPositionModule = () => {
 
     const deviceHandler = (callback: (covidPositionObj: CovidPositionCertain) => void, covidPositionObj: CovidPosition) => {
         (async () => {
-            const {lat = LATITUDE, lon = LONGITUDE, covidSituation = 'negative', device = '0', createdAt=null, updatedAt=null}: any = covidPositionObj || {}
+            const {lat = LATITUDE, lon = LONGITUDE, covidSituation = 'negative', createdAt=null, updatedAt=null}: any = covidPositionObj || {}
             
             const covidPositionCopy: CovidPositionCertain = {
                 lat,

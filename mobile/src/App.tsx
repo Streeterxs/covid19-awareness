@@ -108,6 +108,15 @@ const App = () => {
       },
       onError: (err) => {
         console.log('err: ', err);
+      },
+      updater: store => {
+        const fieldMyCovidPosition =  store.getRoot().getLinkedRecord('myCovidPosition');
+        const fieldCreatedCovidPosition = store.getRootField('NewCovidPosition')?.getLinkedRecord('createdCovidPosition');
+        
+        if (!fieldMyCovidPosition && fieldCreatedCovidPosition) {
+          console.log('entrou aqui updater mutation');
+          store.getRoot().setLinkedRecord(fieldCreatedCovidPosition, 'myCovidPosition')
+        }
       }
     });
   }
@@ -142,8 +151,8 @@ const App = () => {
                 allCovidPositionsButMe.edges.map((edge, index) => edge?.node as CovidPosition) :
                 []}
               situationUpdate={() => {
-                if(!isWatching() && myCovidPosition) {
-                  covidSituationHandler((covidObj) => covidPositionHandler(commitNewPosition, covidObj), myCovidPosition as CovidPosition);
+                if(!isWatching()) {
+                  initialHandler(commitNewPosition, myCovidPosition);
 
                   return;
                 }
