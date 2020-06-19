@@ -6,7 +6,7 @@ import CovidPosition from "../modules/covidPosition/CovidPositionModel";
     console.log('Connection to the database...');
     await connectDatabase();
 
-    CovidPosition.remove({}, () => console.log('deletados'));
+    await CovidPosition.remove({}, () => console.log('deletados'));
 
     process.exit(0);
 })();

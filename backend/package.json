@@ -10,6 +10,7 @@
     "build": "tsc --watch",
     "start": "nodemon --exec npm run babel .",
     "populate": "npm run babel ./src/scripts/populate.ts",
+    "clearDatabase": "npm run babel ./src/scripts/clearDatabase.ts",
     "start:subscription": "nodemon --exec babel-node ./dist/wsSubscription.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
