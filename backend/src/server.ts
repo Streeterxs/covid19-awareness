@@ -5,19 +5,21 @@ import { SubscriptionServer } from 'subscriptions-transport-ws';
 import app from './app';
 import getCurrentUser from './auth.js';
 import Schema from './schema/Schema';
+import { connectDatabase } from './database';
 
 type ConnectionParams = {
     authorization?: string;
   };
 
 (async () => {
-const server = createServer(app.callback());
+  await connectDatabase();
+  const server = createServer(app.callback());
 
-server.listen('3333', () => {
-    console.log('O servidor foi iniciado');
-});
+  server.listen('3333', () => {
+      console.log('O servidor foi iniciado');
+  });
 
-const subscriptionServer = SubscriptionServer.create(
+  const subscriptionServer = SubscriptionServer.create(
     {
       onConnect: async (connectionParams: ConnectionParams) => {
         const me = await getCurrentUser(connectionParams.authorization);

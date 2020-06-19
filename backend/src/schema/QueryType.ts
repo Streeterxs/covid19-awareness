@@ -1,7 +1,7 @@
-import { GraphQLObjectType, GraphQLList } from "graphql";
+import { GraphQLObjectType } from "graphql";
 import { connectionFromArray } from "graphql-relay";
 
-import CovidPositionType from "../modules/covidPosition/CovidPositionType";
+import CovidPositionType, { CovidPositionsConnection } from "../modules/covidPosition/CovidPositionType";
 import { covidPositionsButMeLoader } from "../modules/covidPosition/CovidPositionLoader";
 import { nodeField } from "../graphql/NodeDefinitions";
 import { nodesField } from "../graphql/NodeDefinitions";
@@ -20,8 +20,9 @@ const QueryType = new GraphQLObjectType({
             }
         },
         allCovidPositionsButMe: {
-            type: GraphQLList(CovidPositionType),
+            type: CovidPositionsConnection,
             resolve: async (value, args, {me}) => {
+                console.log('me: ', me);
                 return connectionFromArray(await covidPositionsButMeLoader(me ? me.device : null), args)
             }
         }

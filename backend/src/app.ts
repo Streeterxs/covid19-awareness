@@ -27,7 +27,6 @@ const app = new Koa();
 app.use(logger());
 app.use(cors());
 
-
 const graphqlSettings = async (req: any) => {
 
     const me: ICovidPosition | {me: null} = await getCurrentUser(req.headers.authorization);
