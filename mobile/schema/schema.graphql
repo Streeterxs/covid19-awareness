@@ -25,6 +25,24 @@ type CovidPositionType {
   updatedAt: String
 }
 
+"""A connection to a list of items."""
+type CovidPositionTypeConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [CovidPositionTypeEdge]
+}
+
+"""An edge in a connection."""
+type CovidPositionTypeEdge {
+  """The item at the end of the edge"""
+  node: CovidPositionType
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
 """Mutation types"""
 type MutationType {
   """New CovidPosition mutation"""
@@ -50,6 +68,21 @@ interface Node {
   id: ID!
 }
 
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
 """Graphql type for queries"""
 type QueryType {
   """Fetches an object given its ID"""
@@ -64,7 +97,7 @@ type QueryType {
     ids: [ID!]!
   ): [Node]!
   myCovidPosition: CovidPositionType
-  allCovidPositionsButMe: [CovidPositionType]
+  allCovidPositionsButMe: CovidPositionTypeConnection
 }
 
 """Subscription type"""

@@ -2,24 +2,23 @@ import React, { useState, useEffect } from 'react';
 import {
     View, Dimensions, StyleSheet, Button
 } from 'react-native';
-
-
 import MapView, {Marker} from 'react-native-maps';
-import { CovidPosition } from '../../App';
+
 import { covidPositionsSubscriptionModule } from '../../Services/subscriptions';
+import { CovidPosition } from '../../Services/covidPosition/covidPosition';
 
 
 const { width, height } = Dimensions.get('window');
 
 const ASPECT_RATIO = width / height;
-const LATITUDE = 37.78825;
-const LONGITUDE = -122.4324;
+const LATITUDE = -14.2350044;
+const LONGITUDE = -51.9252815;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 type MapProps = {
   myPosition: CovidPosition,
-  otherCovidPositions: CovidPosition[],
+  otherCovidPositions?: CovidPosition[],
   situationUpdate: () => void
 };
 
@@ -30,14 +29,12 @@ type RegionType = {
   longitudeDelta: number
 }
 
-const {dispose, subscribe} = covidPositionsSubscriptionModule();
 
 const Map = ({myPosition, otherCovidPositions, situationUpdate}: MapProps) => {
-  console.log('carregou mapa!');
   const [regionObj, setRegionObj] = useState<RegionType>(
     {
-      latitude: myPosition.lat,
-      longitude: myPosition.lon,
+      latitude: myPosition && myPosition.lat ? myPosition.lat : LATITUDE,
+      longitude: myPosition && myPosition.lon ? myPosition.lon : LONGITUDE,
       latitudeDelta: LATITUDE_DELTA,
       longitudeDelta: LONGITUDE_DELTA
     }
@@ -45,25 +42,20 @@ const Map = ({myPosition, otherCovidPositions, situationUpdate}: MapProps) => {
   const [map, setMap] = useState<MapView>();
 
   useEffect(() => {
-    subscribe()
     console.log('use effect do mapa: ', myPosition);
     setRegionObj(
       {
-        latitude: myPosition.lat,
-        longitude: myPosition.lon,
+        latitude: myPosition && myPosition.lat ? myPosition.lat : LATITUDE,
+        longitude: myPosition && myPosition.lon ? myPosition.lon : LONGITUDE,
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA
     });
     map?.animateCamera({
       center: {
-        latitude: myPosition.lat,
-        longitude: myPosition.lon,
+        latitude: myPosition && myPosition.lat ? myPosition.lat : LATITUDE,
+        longitude: myPosition && myPosition.lon ? myPosition.lon : LONGITUDE,
       }
     });
-
-    return () => {
-      dispose();
-    }
   }, [myPosition]);
 
   const pinColorSituationHandler = (covidSituation: string) => {
@@ -93,18 +85,18 @@ const Map = ({myPosition, otherCovidPositions, situationUpdate}: MapProps) => {
         <Marker
           coordinate={regionObj}
           title="Your position"
-          description={`Situation: ${myPosition.covidSituation}`}
+          description={`Situation: ${myPosition ? myPosition.covidSituation : 'Not Choosed'}`}
           pinColor="indigo"
         />
         {
           otherCovidPositions?.map(covidPosition => {
             return <Marker
               coordinate={{
-                latitude: covidPosition.lat,
-                longitude: covidPosition.lon
+                latitude: covidPosition?.lat ? covidPosition.lat : 0,
+                longitude: covidPosition?.lon ? covidPosition?.lon : 0
               }}
-              title={`Situation: ${covidPosition.covidSituation}`}
-              pinColor={pinColorSituationHandler(covidPosition.covidSituation)}
+              title={`Situation: ${covidPosition?.covidSituation}`}
+              pinColor={pinColorSituationHandler(covidPosition?.covidSituation ? covidPosition.covidSituation : 'negative')}
             />
           })
         }
@@ -114,8 +106,8 @@ const Map = ({myPosition, otherCovidPositions, situationUpdate}: MapProps) => {
           <Button title="my position" onPress={() => {
               map?.animateCamera({
                 center: {
-                    latitude: myPosition.lat,
-                    longitude: myPosition.lon,
+                  latitude: myPosition && myPosition.lat ? myPosition.lat : LATITUDE,
+                  longitude: myPosition && myPosition.lon ? myPosition.lon : LONGITUDE,
                 }
               }, {duration: 300})
             }

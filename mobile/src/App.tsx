@@ -1,14 +1,4 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
-
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -27,6 +17,11 @@ import { graphql } from 'react-relay';
 import environment from './Relay/environment';
 import { Map } from './Components';
 import { covidPositionModule } from './Services/covidPosition';
+import { CovidPosition, CovidPositionCertain } from './Services/covidPosition/covidPosition';
+import { AppMyCovidPositionQuery } from './__generated__/AppMyCovidPositionQuery.graphql';
+import { AppNewCovidPositionMutation } from './__generated__/AppNewCovidPositionMutation.graphql';
+import { AppAllCovidPositionsButMeQuery } from './__generated__/AppAllCovidPositionsButMeQuery.graphql';
+import { covidPositionsSubscriptionModule } from './Services/subscriptions';
 
 declare const global: {HermesInternal: null | {}};
 
@@ -39,6 +34,31 @@ const myCovidPositionQuery = graphql`
       covidSituation
       createdAt
       updatedAt
+    }
+  }
+`;
+
+const allCovidPositionsButMeQuery = graphql`
+  query AppAllCovidPositionsButMeQuery {
+    allCovidPositionsButMe {
+      edges {
+        node {
+          id
+          covidSituation
+          lat
+          lon
+          device
+          createdAt
+          updatedAt
+        }
+        cursor
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
     }
   }
 `;
@@ -65,24 +85,22 @@ const {
   stopWatchLocation,
   isWatching } = covidPositionModule();
 
-export type CovidPosition = {
-  device: string;
-  covidSituation: string;
-  lat: number;
-  lon: number;
-  createdAt: string;
-  updatedAt: string;
-};
+const positionsSubscriptionModule = covidPositionsSubscriptionModule();
+
 const App = () => {
   // New Position Mutation
-  const [newCovidPositionCommit, newCovidPositionIsInFlight] = useMutation(newCovidPositionMutation);
+  const [newCovidPositionCommit, newCovidPositionIsInFlight] = useMutation<AppNewCovidPositionMutation>(newCovidPositionMutation);
 
-  const {myCovidPosition}: any = useLazyLoadQuery(myCovidPositionQuery, {}, {
+  const {myCovidPosition} = useLazyLoadQuery<AppMyCovidPositionQuery>(myCovidPositionQuery, {}, {
+    fetchPolicy: 'store-or-network'
+  });
+
+  const {allCovidPositionsButMe} = useLazyLoadQuery<AppAllCovidPositionsButMeQuery>(allCovidPositionsButMeQuery, {}, {
     fetchPolicy: 'store-or-network'
   });
   
 
-  const commitNewPosition = (covidPositionObj: CovidPosition) => {
+  const commitNewPosition = (covidPositionObj: CovidPositionCertain) => {
     newCovidPositionCommit({
       variables: {...covidPositionObj},
       onCompleted: (response) => {
@@ -95,12 +113,13 @@ const App = () => {
   }
 
   useEffect(() => {
-    console.log('app render');
+    positionsSubscriptionModule.subscribe();
 
     initialHandler(commitNewPosition, myCovidPosition);
 
     return () => {
       stopWatchLocation();
+      positionsSubscriptionModule.dispose();
     }
   }, [])
 
@@ -115,9 +134,16 @@ const App = () => {
             </View>
           )}
           <View style={styles.body}>
-            <Map myPosition={myCovidPosition} otherCovidPositions={[]} situationUpdate={() => {
-                if(!isWatching()) {
-                  covidSituationHandler((covidObj) => covidPositionHandler(commitNewPosition, covidObj), myCovidPosition);
+            <Map
+              myPosition={myCovidPosition}
+              otherCovidPositions={
+                allCovidPositionsButMe &&
+                allCovidPositionsButMe?.edges ?
+                allCovidPositionsButMe.edges.map((edge, index) => edge?.node as CovidPosition) :
+                []}
+              situationUpdate={() => {
+                if(!isWatching() && myCovidPosition) {
+                  covidSituationHandler((covidObj) => covidPositionHandler(commitNewPosition, covidObj), myCovidPosition as CovidPosition);
 
                   return;
                 }
