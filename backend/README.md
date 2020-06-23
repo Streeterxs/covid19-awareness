@@ -5,3 +5,7 @@ To use this backend environment you need to install (`NPM INSTALL`) all dependen
 ## Running
 
 Utilize two separate consoles, on one execute `tsc --watch` to listen and compile all changes made on .ts files, on another execute `npm start`. Make sure your MongoDB serve is up and running to.
+
+## Node Version
+
+If you are using a version of Nodejs bellow 14 add `"type": "module"` to your package.json file.

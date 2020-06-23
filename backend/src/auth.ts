@@ -1,4 +1,4 @@
-import {covidPositionDeviceLoader} from './modules/covidPosition/CovidPositionLoader';
+import { covidPositionDeviceLoader } from './modules/covidPosition/CovidPositionLoader';
 import { ICovidPosition } from './modules/covidPosition/CovidPositionModel';
 
 type getCurrentUserType = {

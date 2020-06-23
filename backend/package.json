@@ -2,8 +2,7 @@
   "name": "covid19-awareness",
   "version": "1.0.0",
   "description": "app to help people have more precaution about this disease",
-  "main": "dist/server.js",
-  "type": "module",
+  "main": "dist/server",
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "babel": "babel-node --extensions \".es6,.js,.es,.jsx,.mjs,.ts,.tsx\"",
@@ -11,7 +10,6 @@
     "start": "nodemon --exec npm run babel .",
     "populate": "npm run babel ./src/scripts/populate.ts",
     "clearDatabase": "npm run babel ./src/scripts/clearDatabase.ts",
-    "start:subscription": "nodemon --exec babel-node ./dist/wsSubscription.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Afonso Araujo Neto",
@@ -35,6 +33,7 @@
     "@types/koa-logger": "^3.1.1",
     "@types/koa-router": "^7.4.1",
     "@types/mongoose": "^5.7.8",
+    "@types/ws": "^7.2.5",
     "typescript": "^3.8.3"
   },
   "dependencies": {

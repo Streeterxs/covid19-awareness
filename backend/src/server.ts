@@ -3,7 +3,7 @@ import { execute, subscribe } from 'graphql';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 
 import app from './app';
-import getCurrentUser from './auth.js';
+import getCurrentUser from './auth';
 import Schema from './schema/Schema';
 import { connectDatabase } from './database';
 
