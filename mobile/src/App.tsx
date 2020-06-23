@@ -91,25 +91,30 @@ const App = () => {
   // New Position Mutation
   const [newCovidPositionCommit, newCovidPositionIsInFlight] = useMutation<AppNewCovidPositionMutation>(newCovidPositionMutation);
 
-  const {myCovidPosition} = useLazyLoadQuery<AppMyCovidPositionQuery>(myCovidPositionQuery, {}, {
+  const myCovidPositionResponse = useLazyLoadQuery<AppMyCovidPositionQuery>(myCovidPositionQuery, {}, {
     fetchPolicy: 'store-or-network'
   });
 
-  const {allCovidPositionsButMe} = useLazyLoadQuery<AppAllCovidPositionsButMeQuery>(allCovidPositionsButMeQuery, {}, {
+  const allCovidPositionsButMeResponse = useLazyLoadQuery<AppAllCovidPositionsButMeQuery>(allCovidPositionsButMeQuery, {}, {
     fetchPolicy: 'store-or-network'
   });
   
 
   const commitNewPosition = (covidPositionObj: CovidPositionCertain) => {
+
     newCovidPositionCommit({
+  
       variables: {...covidPositionObj},
       onCompleted: (response) => {
+
         console.log('response: ', response);
       },
       onError: (err) => {
+        
         console.log('err: ', err);
       },
       updater: store => {
+
         const fieldMyCovidPosition =  store.getRoot().getLinkedRecord('myCovidPosition');
         const fieldCreatedCovidPosition = store.getRootField('NewCovidPosition')?.getLinkedRecord('createdCovidPosition');
         
@@ -124,7 +129,7 @@ const App = () => {
   useEffect(() => {
     positionsSubscriptionModule.subscribe();
 
-    initialHandler(commitNewPosition, myCovidPosition);
+    initialHandler(commitNewPosition, myCovidPositionResponse.myCovidPosition);
 
     return () => {
       stopWatchLocation();
@@ -144,19 +149,15 @@ const App = () => {
           )}
           <View style={styles.body}>
             <Map
-              myPosition={myCovidPosition}
-              otherCovidPositions={
-                allCovidPositionsButMe &&
-                allCovidPositionsButMe?.edges ?
-                allCovidPositionsButMe.edges.map((edge, index) => edge?.node as CovidPosition) :
-                []}
+              myPosition={myCovidPositionResponse}
+              otherCovidPositions={allCovidPositionsButMeResponse}
               situationUpdate={() => {
                 if(!isWatching()) {
-                  initialHandler(commitNewPosition, myCovidPosition);
+                  initialHandler(commitNewPosition, myCovidPositionResponse.myCovidPosition);
 
                   return;
                 }
-                covidSituationHandler(commitNewPosition, myCovidPosition);
+                covidSituationHandler(commitNewPosition, myCovidPositionResponse.myCovidPosition);
 
               }}/>
           </View>
